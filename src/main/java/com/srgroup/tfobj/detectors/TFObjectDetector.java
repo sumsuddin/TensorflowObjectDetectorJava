@@ -128,12 +128,16 @@ public class TFObjectDetector implements Classifier {
 
         // Scale them back to the input size.
         for (int i = 0; i < outputScores.length; ++i) {
+            float xmin = outputLocations[4 * i + 1] * image.getWidth();
+            float ymin = outputLocations[4 * i] * image.getHeight();
+            float xmax = outputLocations[4 * i + 3] * image.getWidth();
+            float ymax = outputLocations[4 * i + 2] * image.getHeight();
             final Rectangle2D detection =
                     new Rectangle2D(
-                            outputLocations[4 * i + 1] * image.getWidth(),
-                            outputLocations[4 * i] * image.getHeight(),
-                            outputLocations[4 * i + 3] * image.getWidth(),
-                            outputLocations[4 * i + 2] * image.getHeight()) {
+                            xmin,
+                            ymin,
+                            xmax - xmin,
+                            ymax - ymin) {
                     };
             if (outputScores[i] > 0.5) {
                 pq.add(new Recognition("" + i, labels.get((int) outputClasses[i]), outputScores[i], detection));
